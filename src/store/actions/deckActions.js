@@ -21,7 +21,6 @@ export function receiveDecks(decks) {
 }
 
 export function addQuestionCard(title, newQuestion) {
-  console.log("From The Action");
   return {
     type: ADD_QUESTION_CARD,
     title,

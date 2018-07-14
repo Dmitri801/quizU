@@ -11,8 +11,10 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 class DeckList extends Component {
   render() {
     const { decks, navigateToDeck } = this.props;
+    let createdDecks;
     const deckKeys = Object.keys(decks);
-    const availableDecks = (
+
+    createdDecks = (
       <FlatList
         data={deckKeys}
         renderItem={({ item, index }) => (
@@ -29,12 +31,12 @@ class DeckList extends Component {
               style={styles.icon}
             />
             <Text style={styles.subHeadline}>
-              {decks[item].questions.length > 0
-                ? decks[item].questions.length
+              {decks[item].questions && decks[item].questions.length > 0
+                ? decks[item].questions && decks[item].questions.length
                 : " "}
-              {decks[item].questions.length < 1
+              {decks[item].questions && decks[item].questions.length < 1
                 ? " No Cards Yet.."
-                : decks[item].questions.length > 1
+                : decks[item].questions && decks[item].questions.length > 1
                   ? " Cards"
                   : " Card"}
             </Text>
@@ -43,7 +45,8 @@ class DeckList extends Component {
         keyExtractor={(item, index) => index.toString()}
       />
     );
-    return <View style={styles.deckContainer}>{availableDecks}</View>;
+
+    return <View style={styles.deckContainer}>{createdDecks}</View>;
   }
 }
 

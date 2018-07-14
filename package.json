@@ -26,6 +26,8 @@
     "react-native-awesome-alerts": "^1.0.8",
     "react-native-elements": "^0.19.1",
     "react-native-flip-card": "^3.5.2",
+    "react-native-media-queries": "^0.3.0",
+    "react-native-really-awesome-button": "^0.8.3",
     "react-navigation": "^2.6.2",
     "react-redux": "^5.0.7",
     "redux": "^4.0.0",

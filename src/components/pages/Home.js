@@ -3,13 +3,18 @@ import { View, StyleSheet, AsyncStorage } from "react-native";
 import { connect } from "react-redux";
 import { receiveDecks, onSelectDeck } from "../../store/actions/deckActions";
 import { Header } from "react-native-elements";
+import LandingView from "../LandingView";
 import DeckList from "../DeckList";
 
 class HomeScreen extends Component {
+  state = {
+    btnLoading: true
+  };
   componentWillMount() {
     AsyncStorage.getAllKeys()
-      .then(keys =>
-        AsyncStorage.multiGet(keys, (err, stores) => {
+      .then(keys => {
+        let newKeys = keys.filter(key => key !== "QuizUbyDMI:notifications");
+        return AsyncStorage.multiGet(newKeys, (err, stores) => {
           stores.map((results, i, store) => {
             let key = store[i][0];
             let value = store[i][1];
@@ -18,10 +23,19 @@ class HomeScreen extends Component {
             };
             return this.props.receiveDecks(deck);
           });
-        })
-      )
+        });
+      })
       .catch(err => console.log(err));
   }
+
+  navigateToAddDeck = next => {
+    setTimeout(() => {
+      next();
+    }, 500);
+    setTimeout(() => {
+      this.props.navigation.navigate("AddDeck");
+    }, 700);
+  };
 
   navigateToDeck = title => {
     this.props.navigation.navigate("DeckDetail", {
@@ -36,12 +50,20 @@ class HomeScreen extends Component {
   };
 
   render() {
+    const { decks } = this.props;
     return (
       <View style={styles.homeContainer}>
-        <DeckList
-          decks={this.props.decks}
-          navigateToDeck={this.navigateToDeck}
-        />
+        {Object.keys(decks).length === 0 && decks.constructor === Object ? (
+          <LandingView
+            navigateToAddDeck={this.navigateToAddDeck}
+            btnLoading={this.state.btnLoading}
+          />
+        ) : (
+          <DeckList
+            decks={this.props.decks}
+            navigateToDeck={this.navigateToDeck}
+          />
+        )}
       </View>
     );
   }

@@ -1,12 +1,18 @@
 import React, { Component } from "react";
-import { View, Text, StyleSheet, AsyncStorage } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  KeyboardAvoidingView,
+  Platform
+} from "react-native";
 import {
   FormLabel,
   FormInput,
   FormValidationMessage,
   Button
 } from "react-native-elements";
-
+import AwesomeButton from "react-native-really-awesome-button";
 class AddDeckForm extends Component {
   render() {
     return (
@@ -14,7 +20,6 @@ class AddDeckForm extends Component {
         <FormLabel>Enter The Title For A New Deck</FormLabel>
         <FormInput
           containerStyle={{ flexWrap: "wrap" }}
-          multiline
           placeholder="New Deck Title"
           placeholderTextColor="#777"
           style={{ color: "#fff" }}
@@ -30,21 +35,35 @@ class AddDeckForm extends Component {
         {this.props.error && (
           <FormValidationMessage>A New Deck Is Required</FormValidationMessage>
         )}
-        <Button
-          icon={{ name: "create" }}
-          backgroundColor="#9400d3"
-          buttonStyle={{
-            marginTop: 30,
-            width: "100%",
-            padding: 10,
-            borderRadius: 20,
-            marginLeft: 0,
-            marginRight: 0,
-            marginBottom: 0
-          }}
-          onPress={() => this.props.onAddNewDeckClick(this.props.deckValue)}
-          title="CREATE DECK"
-        />
+        {Platform.OS === "ios" ? (
+          <Button
+            icon={{ name: "create" }}
+            backgroundColor="#9400d3"
+            fontWeight="bold"
+            buttonStyle={{
+              marginTop: 30,
+              width: "100%",
+              padding: 10,
+              borderRadius: 20,
+              marginLeft: 0,
+              marginRight: 0,
+              marginBottom: 0
+            }}
+            onPress={() => this.props.onAddNewDeckClick(this.props.deckValue)}
+            title="CREATE DECK"
+          />
+        ) : (
+          <AwesomeButton
+            backgroundColor="#9400d3"
+            backgroundShadow="#551A8B"
+            backgroundDarker="#551A8B"
+            borderRadius={40}
+            onPress={() => this.props.onAddNewDeckClick(this.props.deckValue)}
+            textSize={16}
+          >
+            Add Deck
+          </AwesomeButton>
+        )}
       </View>
     );
   }

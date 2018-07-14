@@ -1,9 +1,12 @@
 import React from "react";
-import { View, Text, StyleSheet, Animated } from "react-native";
+import { View, Text, StyleSheet, Animated, Platform } from "react-native";
 import { Button } from "react-native-elements";
+import AwesomeButton from "react-native-really-awesome-button";
 import FlipCard from "react-native-flip-card";
 const QuizViews = ({
   selectedDeck,
+  opacity,
+
   currentPage,
   questionIndex,
   answerView,
@@ -12,13 +15,21 @@ const QuizViews = ({
   toggleAnswerView,
   onCorrectAnswerClick,
   onIncorrectAnswerClick,
-  correctAnswers
+  correctAnswers,
+  onReturnToDeckClick,
+  resetQuiz
 }) => {
+  let resultsColor;
+  if (correctAnswers / quizLength > 0.65) {
+    resultsColor = "green";
+  } else {
+    resultsColor = "red";
+  }
   return (
     <View style={{ flex: 1 }}>
       <View>
         <Text style={{ color: "#9400d3" }}>
-          Question {currentPage} of {quizLength}
+          {!quizOver ? `Question ${currentPage} Of ${quizLength}` : "Final"}
         </Text>
       </View>
       {!quizOver ? (
@@ -30,18 +41,23 @@ const QuizViews = ({
           flipVertical={false}
           flip={answerView}
           clickable={false}
-          onFlipEnd={isFlipEnd => {
-            console.log("isFlipEnd", isFlipEnd);
-          }}
         >
           {/* Face Side */}
           <View style={[styles.quizCard]}>
-            <View style={styles.questionContainer}>
-              <Text style={{ color: "#fff", fontSize: 30, fontWeight: "bold" }}>
-                {selectedDeck.questions[questionIndex].question}
-              </Text>
+            <View>
+              <Animated.View style={[styles.questionContainer, { opacity }]}>
+                <Text
+                  style={
+                    !answerView
+                      ? { color: "#fff", fontSize: 30, fontWeight: "bold" }
+                      : { color: "#111" }
+                  }
+                >
+                  {selectedDeck.questions[questionIndex].question}
+                </Text>
+              </Animated.View>
               <Button
-                color="#9400d3"
+                color={!answerView ? "#9400d3" : "#111"}
                 transparent
                 title="Answer"
                 onPress={toggleAnswerView}
@@ -50,18 +66,22 @@ const QuizViews = ({
           </View>
           {/* Back Side */}
           <View style={[styles.quizCard]}>
-            <View style={styles.questionContainer}>
+            <View style={styles.answerContainer}>
               <Text
-                style={{
-                  color: "#fff",
-                  fontSize: 30,
-                  fontWeight: "bold"
-                }}
+                style={
+                  answerView
+                    ? {
+                        color: "#fff",
+                        fontSize: 30,
+                        fontWeight: "bold"
+                      }
+                    : { color: "#111" }
+                }
               >
                 {selectedDeck.questions[questionIndex].answer}
               </Text>
               <Button
-                color="#9400d3"
+                color={answerView ? "#9400d3" : "#111"}
                 transparent
                 title="Question"
                 onPress={toggleAnswerView}
@@ -70,16 +90,20 @@ const QuizViews = ({
                 <Button
                   large
                   title="Correct"
-                  backgroundColor="green"
-                  textStyle={{ fontWeight: "bold" }}
+                  backgroundColor={answerView ? "green" : "#111"}
+                  textStyle={
+                    answerView ? { fontWeight: "bold" } : { color: "#111" }
+                  }
                   onPress={onCorrectAnswerClick}
                 />
                 <Button
                   large
                   title="Incorrect"
-                  backgroundColor="red"
+                  backgroundColor={answerView ? "red" : "#111"}
                   onPress={onIncorrectAnswerClick}
-                  textStyle={{ fontWeight: "bold" }}
+                  textStyle={
+                    answerView ? { fontWeight: "bold" } : { color: "#111" }
+                  }
                 />
               </View>
             </View>
@@ -88,9 +112,63 @@ const QuizViews = ({
       ) : (
         <View style={[styles.quizCard]}>
           <View style={styles.scoreContainer}>
-            <Text style={{ color: "#fff", fontSize: 30, fontWeight: "bold" }}>
-              You got {correctAnswers} out of {quizLength} Correct.
+            <Text
+              style={{ color: resultsColor, fontSize: 30, fontWeight: "bold" }}
+            >
+              You got {correctAnswers} out of {quizLength} Correct.{" "}
+              {correctAnswers / quizLength > 0.65 ? "😎" : "😳"}
             </Text>
+            <Text
+              style={{
+                color: resultsColor,
+                textAlign: "center",
+                alignSelf: "center",
+                fontWeight: "bold"
+              }}
+            >
+              Score: {Math.round((correctAnswers / quizLength) * 100)}%
+            </Text>
+            <View style={styles.scoreButtons}>
+              {Platform.OS === "ios" ? (
+                <Button
+                  large
+                  raised
+                  title="Deck Details"
+                  fontWeight="bold"
+                  backgroundColor="#fff"
+                  color="#9400d3"
+                  borderRadius={40}
+                  onPress={onReturnToDeckClick}
+                  buttonStyle={{
+                    marginBottom: 10,
+                    width: "100%"
+                  }}
+                />
+              ) : (
+                <AwesomeButton
+                  backgroundColor="#fff"
+                  backgroundShadow="#551A8B"
+                  backgroundDarker="#551A8B"
+                  textColor="#9400d3"
+                  borderRadius={40}
+                  onPress={onReturnToDeckClick}
+                  textSize={16}
+                >
+                  Card Detail
+                </AwesomeButton>
+              )}
+              <AwesomeButton
+                backgroundColor="#9400d3"
+                backgroundShadow="#551A8B"
+                backgroundDarker="#551A8B"
+                borderRadius={40}
+                onPress={resetQuiz}
+                textSize={16}
+                progress
+              >
+                Restart Quiz
+              </AwesomeButton>
+            </View>
           </View>
         </View>
       )}
@@ -120,10 +198,16 @@ const styles = StyleSheet.create({
   flipper: {
     borderColor: "transparent"
   },
-  questionContainer: {},
-  scoreContainer: {},
-  buttonContainer: {
-    justifyContent: "space-evenly"
+  scoreButtons: {
+    flex: 1,
+    justifyContent: "flex-end",
+    alignItems: "center"
+  },
+  answerContainer: {
+    flex: 1,
+    justifyContent: "center",
+    backfaceVisibility: "hidden",
+    alignItems: "center"
   }
 });
 

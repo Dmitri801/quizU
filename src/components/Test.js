@@ -3,14 +3,12 @@ import {
   View,
   TouchableOpacity,
   Text,
-  FlatList,
   TextInput,
-  Button,
-  AsyncStorage,
+  Animated,
+  Image,
   StyleSheet
 } from "react-native";
-import FlipCard from "react-native-flip-card";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+
 import {
   receiveDecks,
   addDeck,
@@ -21,181 +19,34 @@ import { connect } from "react-redux";
 
 class Test extends Component {
   state = {
-    deck: "",
-    question: "",
-    answer: "",
-    flip: false
+    opacity: new Animated.Value(0)
   };
 
-  componentWillMount() {
-    AsyncStorage.getAllKeys()
-      .then(keys =>
-        AsyncStorage.multiGet(keys, (err, stores) => {
-          stores.map((results, i, store) => {
-            let key = store[i][0];
-            let value = store[i][1];
-            let deck = {
-              [key]: JSON.parse(value)
-            };
-            return this.props.receiveDecks(deck);
-          });
-        })
-      )
-      .catch(err => console.log(err));
+  componentDidMount() {
+    const { opacity } = this.state;
+
+    Animated.timing(opacity, { toValue: 1, duration: 1000 }).start();
   }
 
-  onAddNewDeckClick = title => {
-    const newDeck = {
-      title: title,
-      questions: []
-    };
-    AsyncStorage.setItem(title, JSON.stringify(newDeck)).then(() =>
-      console.log("added")
-    );
-    this.props.addDeck(newDeck);
-    // return AsyncStorage.mergeItem("decks", JSON.stringify(newerDeck));
-  };
-
-  onDisplayDataClick = () => {
-    return AsyncStorage.getItem("React").then(data => {
-      return console.log(JSON.parse(data));
-    });
-  };
-
-  onGetDeckClick = info => {
-    AsyncStorage.getItem(info)
-      .then(data => {
-        data = JSON.parse(data);
-        return this.props.onSelectDeck(data);
-      })
-      .catch(err => console.log(err));
-  };
-
-  onAddNewQuestionCardClick = (title, question, answer) => {
-    let newQuestionCard = {
-      question,
-      answer
-    };
-
-    AsyncStorage.getItem(title)
-      .then(data => {
-        data = JSON.parse(data);
-        data.questions.push(newQuestionCard);
-        this.props.onSelectDeck(data);
-        return AsyncStorage.setItem(title, JSON.stringify(data));
-      })
-      .catch(err => console.log(err));
-    this.props.addQuestionCard(title, newQuestionCard);
-  };
-
-  onClickDeleteDeck = title => {
-    AsyncStorage.removeItem(title).catch(err => console.log(err));
-  };
-
   render() {
-    const { decks } = this.props;
-    const renderItems = Object.keys(decks);
+    const { opacity } = this.state;
     return (
-      <View style={{ backgroundColor: "#333" }}>
-        <TextInput
-          style={{
-            height: 40,
-            color: "#fff",
-
-            borderBottomWidth: 3,
-            borderBottomColor: "purple"
-          }}
-          placeholder="Add A New Deck"
-          onChangeText={deck => this.setState({ deck })}
-        />
-        <TouchableOpacity
-          onPress={() => this.onAddNewDeckClick(this.state.deck)}
-        >
+      <View style={{ backgroundColor: "#333", flex: 1 }}>
+        <TouchableOpacity>
           <Text style={{ color: "#fff" }}>Click To Add A New Deck</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={this.onDisplayDataClick}>
+        <TouchableOpacity>
           <Text style={{ color: "#fff" }}>Click to Display Data</Text>
         </TouchableOpacity>
-        <FlatList
-          data={renderItems}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={({ item }) => (
-            <TouchableOpacity onPress={() => this.onGetDeckClick(item)}>
-              <Text style={{ color: "#fff" }}>{item}</Text>
-              <MaterialCommunityIcons name="cards" size={30} color="purple" />
-              <Text style={{ color: "#fff" }}>
-                {decks[item].questions.length}{" "}
-                {decks[item].questions.length > 1 ? "Cards" : "Card"}
-              </Text>
-            </TouchableOpacity>
-          )}
-        />
-        <TouchableOpacity onPress={this.onClickDeleteData}>
-          <Text style={{ color: "#fff" }}>Click to Delete Data</Text>
-        </TouchableOpacity>
-        <Text style={{ color: "#fff" }}>
-          {JSON.stringify(this.props.selectedDeck)}
-        </Text>
-        {this.props.selectedDeck.selectedDeck !== null && (
-          <View style={styles.addQuestionContainer}>
-            <Text>Add A New Card</Text>
-            <TextInput
-              style={{ height: 40 }}
-              placeholder="New Question"
-              onChangeText={question => this.setState({ question })}
-            />
-            <TextInput
-              style={{ height: 40 }}
-              placeholder="Answer"
-              onChangeText={answer => this.setState({ answer })}
-            />
-            <Button
-              title="Submit New Card"
-              onPress={() =>
-                this.onAddNewQuestionCardClick(
-                  this.props.selectedDeck.selectedDeck.title,
-                  this.state.question,
-                  this.state.answer
-                )
-              }
-            />
-            <Button
-              title="Delete Card"
-              onPress={() =>
-                this.onClickDeleteDeck(
-                  this.props.selectedDeck.selectedDeck.title
-                )
-              }
-            />
-          </View>
-        )}
-        <FlipCard
-          style={styles.card}
-          friction={6}
-          perspective={1000}
-          flipHorizontal={true}
-          flipVertical={false}
-          flip={this.state.flip}
-          clickable={false}
-          onFlipEnd={isFlipEnd => {
-            console.log("isFlipEnd", isFlipEnd);
-          }}
-        >
-          {/* Face Side */}
-          <View style={styles.face}>
-            <Text style={{ color: "white" }}>The Face</Text>
-          </View>
-          {/* Back Side */}
-          <View style={styles.back}>
-            <Text>The Back</Text>
-          </View>
-        </FlipCard>
-        <Button
-          title="Flip Card"
-          onPress={() =>
-            this.setState(prevState => ({ flip: !prevState.flip }))
-          }
-        />
+        <View style={styles.content}>
+          <Animated.Image
+            style={[styles.img, { opacity }]}
+            source={{
+              uri:
+                "https://images.pexels.com/photos/1210530/pexels-photo-1210530.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260"
+            }}
+          />
+        </View>
       </View>
     );
   }
@@ -204,6 +55,15 @@ class Test extends Component {
 const styles = StyleSheet.create({
   addQuestionContainer: {
     marginTop: 100
+  },
+  img: {
+    height: 200,
+    width: 200
+  },
+  content: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center"
   },
   face: {
     height: 100,

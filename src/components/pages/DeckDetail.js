@@ -1,10 +1,16 @@
 import React, { Component } from "react";
-import { View, Text, StyleSheet, AsyncStorage } from "react-native";
+import { View, Text, StyleSheet, AsyncStorage, Platform } from "react-native";
+import {
+  clearLocalNotification,
+  setLocalNotification
+} from "../../../utils/helpers";
 import AwesomeAlert from "react-native-awesome-alerts";
 import { deleteDeck } from "../../store/actions/deckActions";
 import { connect } from "react-redux";
 import { Feather } from "@expo/vector-icons";
+import AwesomeButton from "react-native-really-awesome-button";
 import { Button } from "react-native-elements";
+
 class DeckDetail extends Component {
   state = {
     showAlert: false
@@ -14,6 +20,15 @@ class DeckDetail extends Component {
     return {
       title: title.toUpperCase()
     };
+  };
+
+  activateQuiz = () => {
+    if (this.props.selectedDeck.selectedDeck.questions.length > 0) {
+      this.props.navigation.navigate("Quiz");
+      clearLocalNotification().then(setLocalNotification);
+    } else {
+      alert("You Havent Added Any Cards Yet");
+    }
   };
 
   showAlert = () => {
@@ -30,7 +45,7 @@ class DeckDetail extends Component {
   onClickDeleteDeck = title => {
     AsyncStorage.removeItem(title).catch(err => console.log(err));
     this.props.deleteDeck(title);
-    this.props.navigation.goBack();
+    this.props.navigation.navigate("Home");
   };
   render() {
     const { showAlert } = this.state;
@@ -73,51 +88,82 @@ class DeckDetail extends Component {
           </Text>
         </View>
         <View style={styles.deckCardButtons}>
-          <Button
-            large
-            raised
-            title="Add A New Card"
-            fontWeight="bold"
-            backgroundColor="#fff"
-            color="#000"
-            borderRadius={40}
-            onPress={() =>
-              this.props.navigation.navigate("NewQuestion", {
-                title: selectedDeck.title
-              })
-            }
-            buttonStyle={{
-              marginBottom: 10,
-              width: "100%"
-            }}
-          />
-          <Button
-            large
-            raised
-            title="Start Quiz"
-            onPress={() => this.props.navigation.navigate("Quiz")}
-            backgroundColor="transparent"
-            borderRadius={40}
-            fontWeight="bold"
-            outline
-            loading={!selectedDeck || selectedDeck.questions.length < 1}
-            disabled={!selectedDeck || selectedDeck.questions.length < 1}
-            textStyle={
-              !selectedDeck || selectedDeck.questions.length < 1
-                ? { color: "#9400d3" }
-                : {
-                    fontSize: 40,
-                    textShadowColor: "#9400d3",
-                    textShadowRadius: 100
-                  }
-            }
-            disabledStyle={{ backgroundColor: "#9400d3" }}
-            activityIndicatorStyle={{ backgroundColor: "black" }}
-            buttonStyle={{
-              borderColor: "#9400d3",
-              width: "100%"
-            }}
-          />
+          {Platform.OS === "ios" ? (
+            <Button
+              large
+              raised
+              title="Add A New Card"
+              fontWeight="bold"
+              backgroundColor="#fff"
+              color="#000"
+              borderRadius={40}
+              onPress={() =>
+                this.props.navigation.navigate("NewQuestion", {
+                  title: selectedDeck.title
+                })
+              }
+              buttonStyle={{
+                marginBottom: 10,
+                width: "100%"
+              }}
+            />
+          ) : (
+            <AwesomeButton
+              backgroundColor="#111"
+              backgroundShadow="#551A8B"
+              backgroundDarker="#551A8B"
+              onPress={() =>
+                this.props.navigation.navigate("NewQuestion", {
+                  title: selectedDeck.title
+                })
+              }
+              color="#fff"
+              textSize={20}
+            >
+              Add A Card
+            </AwesomeButton>
+          )}
+
+          {Platform.OS === "ios" ? (
+            <Button
+              large
+              raised
+              title="Start Quiz"
+              onPress={this.activateQuiz}
+              backgroundColor="transparent"
+              borderRadius={40}
+              fontWeight="bold"
+              outline
+              loading={!selectedDeck || selectedDeck.questions.length < 1}
+              disabled={!selectedDeck || selectedDeck.questions.length < 1}
+              textStyle={
+                !selectedDeck || selectedDeck.questions.length < 1
+                  ? { color: "#9400d3" }
+                  : {
+                      fontSize: 40,
+                      textShadowColor: "#9400d3",
+                      textShadowRadius: 100
+                    }
+              }
+              disabledStyle={{ backgroundColor: "#9400d3" }}
+              activityIndicatorStyle={{ backgroundColor: "black" }}
+              buttonStyle={{
+                borderColor: "#9400d3",
+                width: "100%"
+              }}
+            />
+          ) : (
+            <AwesomeButton
+              backgroundColor="#111"
+              backgroundShadow="#551A8B"
+              backgroundDarker="#551A8B"
+              onPress={this.activateQuiz}
+              color="#fff"
+              textSize={20}
+            >
+              Start Quiz
+            </AwesomeButton>
+          )}
         </View>
         <View style={styles.deckCardDeleteButton}>
           <Button

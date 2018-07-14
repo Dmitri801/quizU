@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import AddDeckForm from "../AddDeckForm";
+
 import { View, AsyncStorage, StyleSheet } from "react-native";
 import { addDeck } from "../../store/actions/deckActions";
 import { connect } from "react-redux";
@@ -27,7 +28,7 @@ class AddDeck extends Component {
       );
       this.props.addDeck(newDeck);
       this.setState({ deckValue: "", error: false });
-      this.navigateHome();
+      this.props.navigation.navigate("DeckDetail", { title: newDeck.title });
     }
   };
 

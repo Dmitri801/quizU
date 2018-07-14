@@ -1,4 +1,4 @@
-import { SELECT_DECK, GET_DECKS } from "../actions/constants";
+import { SELECT_DECK, GET_DECKS, ADD_DECK } from "../actions/constants";
 
 const initialState = {
   selectedDeck: null
@@ -15,6 +15,11 @@ export default function(state = initialState, action) {
       return {
         ...state,
         selectedDeck: null
+      };
+    case ADD_DECK:
+      return {
+        ...state,
+        selectedDeck: Object.assign({}, action.deck)
       };
     default:
       return state;
