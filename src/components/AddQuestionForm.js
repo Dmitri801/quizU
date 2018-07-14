@@ -1,5 +1,11 @@
 import React from "react";
-import { View, Text, Platform, Dimensions } from "react-native";
+import {
+  View,
+  Keyboard,
+  TouchableWithoutFeedback,
+  Platform,
+  Dimensions
+} from "react-native";
 import {
   FormLabel,
   FormInput,
@@ -18,85 +24,95 @@ const AddQuestionForm = ({
   selectedDeck
 }) => {
   return (
-    <View style={formCard}>
-      <FormLabel>New Question</FormLabel>
-      <FormInput
-        containerStyle={{ padding: 10, marginBottom: 10 }}
-        placeholder="Question"
-        placeholderTextColor="#777"
-        style={{ color: "#fff" }}
-        selectionColor="#9400d3"
-        value={questionValue}
-        onChangeText={onQuestionChangeText}
-        inputStyle={inputStyle}
-      />
-      {questionError && (
-        <FormValidationMessage>A Question Is Required</FormValidationMessage>
-      )}
-      <FormInput
-        containerStyle={{ padding: 10 }}
-        placeholder="Answer"
-        placeholderTextColor="#777"
-        style={{ color: "#fff" }}
-        selectionColor="#9400d3"
-        value={answerValue}
-        onChangeText={onAnswerChangeText}
-        inputStyle={inputStyle}
-      />
-      {answerError && (
-        <View
-          style={{
-            justifyContent: "flex-end",
-            marginTop: Platform.OS === "ios" ? 20 : null
-          }}
-        >
-          <FormValidationMessage>An Answer Is Required</FormValidationMessage>
-        </View>
-      )}
-      {Platform.OS === "ios" ? (
-        <Button
-          icon={{ name: "create" }}
-          backgroundColor="#9400d3"
-          fontWeight="bold"
-          textStyle={{ color: "#fff" }}
-          buttonStyle={{
-            borderColor: "#9400d3",
-
-            marginTop: 200,
-            width: "100%",
-            padding: 10,
-            borderRadius: 20,
-            marginLeft: 0,
-            marginRight: 0,
-            marginBottom: 0
-          }}
-          onPress={() =>
-            onAddNewQuestionCardClick(
-              selectedDeck.title,
-              questionValue,
-              answerValue
-            )
-          }
-          title="ADD TO DECK"
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <View style={formCard}>
+        <FormLabel>New Question</FormLabel>
+        <FormInput
+          containerStyle={{ padding: 10, marginBottom: 10 }}
+          placeholder="Question"
+          placeholderTextColor="#777"
+          style={{ color: "#fff" }}
+          selectionColor="#9400d3"
+          returnKeyType="done"
+          underlineColorAndroid="#551A8B"
+          value={questionValue}
+          onChangeText={onQuestionChangeText}
+          inputStyle={inputStyle}
+          keyboardAppearance="dark"
         />
-      ) : (
-        <AwesomeButton
-          backgroundColor="#9400d3"
-          backgroundShadow="#551A8B"
-          backgroundDarker="#551A8B"
-          onPress={() =>
-            onAddNewQuestionCardClick(
-              selectedDeck.title,
-              questionValue,
-              answerValue
-            )
-          }
-          textSize={20}
-        >
-          Create Card
-        </AwesomeButton>
-      )}
-    </View>
+        {questionError && (
+          <FormValidationMessage>A Question Is Required</FormValidationMessage>
+        )}
+        <FormInput
+          containerStyle={{ padding: 10 }}
+          placeholder="Answer"
+          placeholderTextColor="#777"
+          style={{ color: "#fff" }}
+          selectionColor="#9400d3"
+          returnKeyType="done"
+          underlineColorAndroid="#551A8B"
+          value={answerValue}
+          onChangeText={onAnswerChangeText}
+          inputStyle={inputStyle}
+          keyboardAppearance="dark"
+        />
+        {answerError && (
+          <View
+            style={{
+              marginTop: Platform.OS === "ios" ? 20 : null
+            }}
+          >
+            <FormValidationMessage>An Answer Is Required</FormValidationMessage>
+          </View>
+        )}
+        {Platform.OS === "ios" ? (
+          <View style={{ flex: 1, justifyContent: "flex-end" }}>
+            <Button
+              icon={{ name: "create" }}
+              backgroundColor="#9400d3"
+              fontWeight="bold"
+              textStyle={{ color: "#fff" }}
+              buttonStyle={{
+                borderColor: "#9400d3",
+
+                width: "100%",
+                padding: 10,
+                borderRadius: 20,
+                marginLeft: 0,
+                marginRight: 0,
+                marginBottom: 0
+              }}
+              onPress={() =>
+                onAddNewQuestionCardClick(
+                  selectedDeck.title,
+                  questionValue,
+                  answerValue
+                )
+              }
+              title="ADD TO DECK"
+            />
+          </View>
+        ) : (
+          <View style={{ flex: 1, justifyContent: "flex-end" }}>
+            <AwesomeButton
+              backgroundColor="#9400d3"
+              backgroundShadow="#551A8B"
+              backgroundDarker="#551A8B"
+              onPress={() =>
+                onAddNewQuestionCardClick(
+                  selectedDeck.title,
+                  questionValue,
+                  answerValue
+                )
+              }
+              textSize={20}
+            >
+              Create Card
+            </AwesomeButton>
+          </View>
+        )}
+      </View>
+    </TouchableWithoutFeedback>
   );
 };
 

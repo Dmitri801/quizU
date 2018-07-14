@@ -82,6 +82,7 @@ if (Platform.OS === "ios") {
           labelStyle: {
             fontSize: 13
           },
+          pressColor: "#9400d3",
           activeTintColor: "#fff",
           style: {
             backgroundColor: "#111"
@@ -110,6 +111,7 @@ if (Platform.OS === "ios") {
           labelStyle: {
             fontSize: 13
           },
+          pressColor: "#9400d3",
           indicatorStyle: {
             backgroundColor: "#551A8B"
           },

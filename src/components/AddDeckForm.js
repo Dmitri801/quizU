@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 import {
   View,
-  Text,
   StyleSheet,
-  KeyboardAvoidingView,
+  TouchableWithoutFeedback,
+  Keyboard,
   Platform
 } from "react-native";
 import {
@@ -16,55 +16,62 @@ import AwesomeButton from "react-native-really-awesome-button";
 class AddDeckForm extends Component {
   render() {
     return (
-      <View style={styles.formCard}>
-        <FormLabel>Enter The Title For A New Deck</FormLabel>
-        <FormInput
-          containerStyle={{ flexWrap: "wrap" }}
-          placeholder="New Deck Title"
-          placeholderTextColor="#777"
-          style={{ color: "#fff" }}
-          selectionColor="#9400d3"
-          value={this.props.deckValue}
-          onChangeText={this.props.onChangeText}
-          inputStyle={{
-            color: "white",
-            fontWeight: "bold",
-            width: 250
-          }}
-        />
-        {this.props.error && (
-          <FormValidationMessage>A New Deck Is Required</FormValidationMessage>
-        )}
-        {Platform.OS === "ios" ? (
-          <Button
-            icon={{ name: "create" }}
-            backgroundColor="#9400d3"
-            fontWeight="bold"
-            buttonStyle={{
-              marginTop: 30,
-              width: "100%",
-              padding: 10,
-              borderRadius: 20,
-              marginLeft: 0,
-              marginRight: 0,
-              marginBottom: 0
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <View style={styles.formCard}>
+          <FormLabel>Enter The Title For A New Deck</FormLabel>
+          <FormInput
+            containerStyle={{ flexWrap: "wrap" }}
+            placeholder="New Deck Title"
+            placeholderTextColor="#777"
+            style={{ color: "#fff" }}
+            selectionColor="#9400d3"
+            returnKeyType="done"
+            underlineColorAndroid="#551A8B"
+            keyboardAppearance="dark"
+            value={this.props.deckValue}
+            onChangeText={this.props.onChangeText}
+            inputStyle={{
+              color: "white",
+              fontWeight: "bold",
+              width: 250
             }}
-            onPress={() => this.props.onAddNewDeckClick(this.props.deckValue)}
-            title="CREATE DECK"
           />
-        ) : (
-          <AwesomeButton
-            backgroundColor="#9400d3"
-            backgroundShadow="#551A8B"
-            backgroundDarker="#551A8B"
-            borderRadius={40}
-            onPress={() => this.props.onAddNewDeckClick(this.props.deckValue)}
-            textSize={16}
-          >
-            Add Deck
-          </AwesomeButton>
-        )}
-      </View>
+          {this.props.error && (
+            <FormValidationMessage>
+              A New Deck Is Required
+            </FormValidationMessage>
+          )}
+          {Platform.OS === "ios" ? (
+            <Button
+              icon={{ name: "create" }}
+              backgroundColor="#9400d3"
+              fontWeight="bold"
+              buttonStyle={{
+                marginTop: 30,
+                width: "100%",
+                padding: 10,
+                borderRadius: 20,
+                marginLeft: 0,
+                marginRight: 0,
+                marginBottom: 0
+              }}
+              onPress={() => this.props.onAddNewDeckClick(this.props.deckValue)}
+              title="CREATE DECK"
+            />
+          ) : (
+            <AwesomeButton
+              backgroundColor="#9400d3"
+              backgroundShadow="#551A8B"
+              backgroundDarker="#551A8B"
+              borderRadius={40}
+              onPress={() => this.props.onAddNewDeckClick(this.props.deckValue)}
+              textSize={16}
+            >
+              Add Deck
+            </AwesomeButton>
+          )}
+        </View>
+      </TouchableWithoutFeedback>
     );
   }
 }
